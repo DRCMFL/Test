@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>Nhật ký cai thuốc · 27 ngày</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121d2c;--panel2:#19283a;--line:#2a3b50;--text:#f3f7fb;--muted:#9badbf;--green:#45d6a0;--green2:#173c35;--red:#ff777d;--red2:#48262c;--blue:#7cbcff;--amber:#ffd17a;--radius:20px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at top,#17283b 0%,var(--bg) 48%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.45;padding:0 0 calc(28px + env(safe-area-inset-bottom))}
+.app{max-width:760px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 16px 28px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.eyebrow{font-size:11px;letter-spacing:.13em;font-weight:800;color:var(--green);text-transform:uppercase}
+.pill{border:1px solid #35516a;background:#142337;color:#c8d9e9;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:700;white-space:nowrap}
+h1{font-size:clamp(27px,7vw,38px);line-height:1.08;letter-spacing:-.04em;margin:8px 0 8px;font-weight:850}
+.subtitle{color:var(--muted);font-size:14px;margin:0 0 20px;max-width:520px}
+.panel{background:linear-gradient(160deg,rgba(25,40,58,.98),rgba(17,28,42,.98));border:1px solid rgba(128,158,187,.13);border-radius:var(--radius);padding:16px;margin:13px 0;box-shadow:0 12px 32px rgba(0,0,0,.16)}
+.panel-title{font-size:17px;font-weight:800;letter-spacing:-.02em;margin:0 0 13px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{background:#0e1927;border:1px solid rgba(128,158,187,.1);border-radius:15px;padding:13px;min-height:91px}
+.stat-label{font-size:11px;color:var(--muted);font-weight:650;display:block;margin-bottom:7px}
+.stat-value{font-size:27px;line-height:1;font-weight:850;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.stat-unit{font-size:11px;color:var(--muted);font-weight:600;margin-left:4px}
+.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}
+.progress-head{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:750;margin-bottom:9px}
+.progress-track{height:10px;background:#2a3b50;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#29b987,#70edbc);transition:width .25s ease}
+.small-note{font-size:11px;color:var(--muted);margin-top:7px}
+.field-label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:0 0 7px}
+select{width:100%;appearance:none;background:#0d1826;color:var(--text);border:1px solid var(--line);border-radius:13px;padding:13px 42px 13px 13px;font:inherit;font-size:15px;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239badbf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+.day-card{background:linear-gradient(155deg,#192a3e,#111e2d);border:1px solid #31475d;border-radius:22px;padding:17px;margin-top:12px}
+.day-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.day-kicker{font-size:11px;letter-spacing:.14em;font-weight:800;color:#a9bed1;text-transform:uppercase}
+.status{font-size:11px;font-weight:800;padding:6px 9px;border-radius:999px;background:#26384d;color:#c9d8e6;white-space:nowrap}
+.status.ok{background:#173c35;color:#76e8bc}.status.over{background:var(--red2);color:#ffadb0}.status.zero{background:#173c35;color:#76e8bc}.status.pending{background:#21364b;color:#a9d1ff}
+.counter{text-align:center;padding:19px 0 15px}
+.counter-num{font-size:62px;font-weight:900;letter-spacing:-.065em;line-height:1;font-variant-numeric:tabular-nums}
+.counter-label{font-size:13px;color:var(--muted);margin-top:5px}
+.limit-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:4px 0 12px}
+.limit-box{background:#0d1927;border:1px solid rgba(128,158,187,.12);border-radius:13px;padding:11px 12px}
+.limit-label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px}
+.limit-value{font-size:24px;font-weight:850;line-height:1.05;font-variant-numeric:tabular-nums}
+.alert{border-radius:13px;padding:11px 12px;font-size:12px;margin:10px 0;display:flex;gap:9px;align-items:flex-start}
+.alert.warn{background:var(--red2);border:1px solid #794048;color:#ffd2d3}.alert.good{background:#14372f;border:1px solid #286653;color:#a4f1d1}.alert.info{background:#132a3d;border:1px solid #294b68;color:#c4dcf3}
+.primary{width:100%;border:0;border-radius:17px;min-height:70px;padding:13px 18px;background:linear-gradient(135deg,#35c991,#22a979);color:#06261b;font-size:21px;font-weight:900;letter-spacing:-.02em;box-shadow:0 8px 20px rgba(39,193,136,.18);cursor:pointer;touch-action:manipulation}
+.primary:active{transform:scale(.985);filter:brightness(.96)}
+.primary:disabled{opacity:.5;cursor:not-allowed}
+.plus{font-size:26px;vertical-align:-2px;margin-right:6px}
+.secondary{border:1px solid #40556c;background:#1c2d40;color:#e4edf5;border-radius:13px;padding:12px 14px;font:inherit;font-size:13px;font-weight:750;cursor:pointer;min-height:44px}
+.finish{width:100%;margin-top:10px;background:#162d3b;border-color:#356078;color:#b9e5ff}
+.subtle{font-size:11px;color:var(--muted);text-align:center;margin:9px 3px 0}
+.divider{height:1px;background:var(--line);margin:16px 0}
+.stat-lines{display:grid;gap:10px}
+.stat-line{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;font-size:13px}
+.stat-line span:first-child{color:var(--muted)}.stat-line strong{font-variant-numeric:tabular-nums;text-align:right}
+.history-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.history-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+.history-item{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;width:100%;padding:12px;background:#0e1927;border:1px solid rgba(128,158,187,.12);border-radius:14px;color:var(--text);cursor:pointer}
+.history-item.selected{border-color:#55cfa1;background:#142c2b;box-shadow:inset 0 0 0 1px rgba(69,214,160,.15)}
+.history-main{min-width:0}.history-name{font-size:13px;font-weight:800}.history-meta{font-size:11px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+.history-right{text-align:right;flex:none}.history-count{font-size:16px;font-weight:850;font-variant-numeric:tabular-nums}.history-state{font-size:10px;font-weight:750;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 13px;margin-top:12px}.legend span{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.dot.normal{background:#7cbcff}.dot.over{background:var(--red)}.dot.zero{background:var(--green)}
+.notice{font-size:12px;color:#c5d2de;background:#101d2b;border:1px solid #2b3f55;border-radius:14px;padding:13px;line-height:1.55}
+.storage{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin:11px 2px 0}.storage-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex:none}.storage-dot.bad{background:var(--amber)}
+.footer-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.danger{border-color:#704049;background:#2d1a24;color:#ffc1c4}
+.reset-help{font-size:11px;color:var(--muted);margin-top:8px}
+@media(min-width:560px){.app{padding-left:22px;padding-right:22px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.history-grid{grid-template-columns:1fr 1fr}.panel{padding:19px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="header"><div class="eyebrow">NHẬT KÝ CAI THUỐC</div><div class="pill">27 ngày · tối đa 35 ngày</div></header>
+  <h1>Mỗi ngày một bước<br>tự do.</h1>
+  <p class="subtitle">Ghi nhận trung thực. Không phán xét. Không cần hút hết hạn mức — mục tiêu cuối cùng là 0 điếu.</p>
+
+  <section class="panel" aria-label="Tổng quan hành trình">
+    <div class="stats">
+      <div class="stat"><span class="stat-label">TỔNG ĐÃ HÚT</span><span class="stat-value" id="totalSmoked">0</span><span class="stat-unit">điếu</span></div>
+      <div class="stat"><span class="stat-label">QUỸ PHÂN BỔ</span><span class="stat-value green" id="pool">0</span><span class="stat-unit">điếu</span></div>
+      <div class="stat"><span class="stat-label">NGÀY HOÀN THÀNH</span><span class="stat-value" id="completedDays">0</span><span class="stat-unit">ngày</span></div>
+      <div class="stat"><span class="stat-label">NGÀY CÒN LẠI</span><span class="stat-value" id="remainingDays">27</span><span class="stat-unit">ngày</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="progress-head"><span>Tiến độ hành trình</span><span class="green" id="progressText">0%</span></div>
+    <div class="progress-track" role="progressbar" aria-label="Tiến độ hành trình" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="small-note" id="progressSub">0/27 ngày đã hoàn thành</div>
+  </section>
+
+  <section class="panel" aria-label="Ghi nhận trong ngày">
+    <h2 class="panel-title">Nhật ký ngày được chọn</h2>
+    <label class="field-label" for="daySelect">Chọn ngày muốn ghi nhận — không tự động chuyển ngày</label>
+    <select id="daySelect" aria-label="Chọn ngày"></select>
+    <article class="day-card">
+      <div class="day-top"><span class="day-kicker" id="dayKicker">NGÀY 1</span><span class="status pending" id="dayStatus">CHƯA CHỐT</span></div>
+      <div class="counter"><div class="counter-num" id="dayCount">0</div><div class="counter-label">điếu đã hút thực tế</div></div>
+      <div class="limit-grid">
+        <div class="limit-box"><span class="limit-label">Hạn mức gốc</span><span class="limit-value" id="baseLimit">12</span></div>
+        <div class="limit-box"><span class="limit-label">Hạn mức sau điều chỉnh</span><span class="limit-value green" id="adjustedLimit">12</span></div>
+      </div>
+      <div id="dayAlert" class="alert good"><span>✓</span><span>Chưa ghi nhận điếu nào hôm nay. Mỗi ngày 0 điếu đều là một bước tiến.</span></div>
+      <button class="primary" id="addBtn" type="button"><span class="plus">＋</span>+1 ĐIẾU</button>
+      <p class="subtle">Mỗi lần chạm = 1 điếu thực tế. Có thể bấm không giới hạn. Không có nút giảm hoặc sửa số lượng.</p>
+      <button class="secondary finish" id="finishBtn" type="button">Xác nhận hoàn thành ngày</button>
+      <p class="subtle" id="closedNote" hidden>Ngày đã chốt. Bạn vẫn có thể ghi nhận thêm bằng +1; hạn mức và phân bổ đã chốt sẽ không bị tính lại.</p>
+    </article>
+  </section>
+
+  <section class="panel" aria-label="Thống kê">
+    <h2 class="panel-title">Thống kê toàn hành trình</h2>
+    <div class="stat-lines">
+      <div class="stat-line"><span>Tổng hạn mức ban đầu</span><strong id="originalTotal">166 điếu</strong></div>
+      <div class="stat-line"><span>Tổng hạn mức điều chỉnh (các ngày đã mở)</span><strong id="adjustedTotal">166 điếu</strong></div>
+      <div class="stat-line"><span>Tổng số điếu đã hút</span><strong id="smokedTotalLine">0 điếu</strong></div>
+      <div class="stat-line"><span>Tiết kiệm ròng ở các ngày đã chốt</span><strong class="green" id="savedTotal">0 điếu</strong></div>
+      <div class="small-note">Tiết kiệm ròng = hạn mức điều chỉnh của các ngày đã chốt trừ số điếu thực tế ở những ngày đó. Kết quả âm nghĩa là tổng thực tế đã vượt hạn mức.</div>
+      <div class="stat-line"><span>Số điếu còn trong quỹ</span><strong class="green" id="poolLine">0 điếu</strong></div>
+      <div class="stat-line"><span>Số ngày đã hoàn thành</span><strong id="doneLine">0 ngày</strong></div>
+      <div class="stat-line"><span>Số ngày còn lại</span><strong id="leftLine">27 ngày</strong></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Lịch sử 35 ngày">
+    <div class="history-head"><h2 class="panel-title" style="margin:0">Lịch sử 35 ngày</h2><span class="pill" id="openedBadge">27 ngày đã mở</span></div>
+    <div class="small-note">Chạm vào thẻ ngày để xem lại hoặc ghi nhận. Ngày 28–35 chỉ mở khi hành trình cần kéo dài.</div>
+    <div class="history-grid" id="historyGrid"></div>
+    <div class="legend"><span><i class="dot normal"></i>Đang theo dõi</span><span><i class="dot over"></i>Vượt hạn mức</span><span><i class="dot zero"></i>Ngày 0 điếu</span></div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel-title">Nguyên tắc quan trọng</h2>
+    <div class="notice">Hạn mức là mức trần tham khảo, không phải mục tiêu cần hút hết. Cuối ngày chỉ khi bạn xác nhận hoàn thành, phần dư dương mới được đưa vào quỹ và chia đều cho những ngày chưa hoàn thành ở phía sau. Phần lẻ tiếp tục nằm trong quỹ. Không phân bổ ngược về ngày đã qua hoặc cộng hạn mức vào ngày đã chốt. Nếu đến ngày cuối mà vẫn còn hút thuốc, hành trình có thể tự mở thêm từng ngày, tối đa 35 ngày. Đạt 0 điếu là ưu tiên cao nhất — không cần kéo dài chỉ để dùng hết quỹ.</div>
+    <div class="storage" id="storageStatus"><i class="storage-dot" id="storageDot"></i><span id="storageText">Đang kiểm tra khả năng lưu dữ liệu…</span></div>
+    <div class="footer-actions">
+      <button class="secondary" type="button" id="backupBtn">Xuất bản sao lưu</button>
+      <button class="secondary danger" type="button" id="resetBtn">Đặt lại hành trình</button>
+    </div>
+    <p class="reset-help">Đặt lại sẽ xóa toàn bộ bộ đếm, quỹ dư và hạn mức đã điều chỉnh sau khi bạn xác nhận.</p>
+  </section>
+  <p class="small-note" style="text-align:center;padding:0 12px 12px">Dữ liệu được lưu trên trình duyệt của thiết bị này. Hãy xuất bản sao lưu định kỳ để có thêm một bản dự phòng.</p>
+</main>
+<script>
+(() => {
+  'use strict';
+  const KEY='quitJournal27_v1';
+  const DB_NAME='quitJournalLocalDB';
+  const STORE='state';
+  const baseFor = i => i<4?12:i<8?10:i<12?8:i<16?6:i<20?4:i<23?2:0;
+  const baseLimits=Array.from({length:35},(_,i)=>baseFor(i));
+  const initialState=()=>({version:1,counts:Array(35).fill(0),quotas:[...baseLimits],completed:Array(35).fill(false),pool:0,openDays:27,selectedDay:0,updatedAt:Date.now()});
+  let state=initialState();
+  let db=null;
+  let storageMode='none';
+  const $=id=>document.getElementById(id);
+  const sum=a=>a.reduce((x,y)=>x+y,0);
+  const safeInt=n=>Number.isFinite(n)&&n>=0?Math.floor(n):0;
+
+  function normalize(raw){
+    if(!raw||raw.version!==1)return initialState();
+    const s=initialState();
+    s.counts=Array.from({length:35},(_,i)=>safeInt(raw.counts?.[i]));
+    s.quotas=Array.from({length:35},(_,i)=>safeInt(raw.quotas?.[i] ?? baseLimits[i]));
+    s.completed=Array.from({length:35},(_,i)=>Boolean(raw.completed?.[i]));
+    s.pool=safeInt(raw.pool);
+    s.openDays=Math.min(35,Math.max(27,safeInt(raw.openDays)||27));
+    s.selectedDay=Math.min(s.openDays-1,safeInt(raw.selectedDay));
+    s.updatedAt=Number(raw.updatedAt)||Date.now();
+    return s;
+  }
+  function openDatabase(){
+    return new Promise((resolve,reject)=>{
+      if(!('indexedDB' in window)){reject(new Error('IndexedDB không khả dụng'));return;}
+      let req;
+      try{req=indexedDB.open(DB_NAME,1);}catch(e){reject(e);return;}
+      req.onupgradeneeded=()=>{const d=req.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE);};
+      req.onsuccess=()=>{db=req.result;resolve(db);};
+      req.onerror=()=>reject(req.error||new Error('Không mở được IndexedDB'));
+    });
+  }
+  function dbGet(){return new Promise((resolve,reject)=>{try{const tx=db.transaction(STORE,'readonly');const r=tx.objectStore(STORE).get('current');r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);}catch(e){reject(e);}});}
+  function dbPut(value){return new Promise((resolve,reject)=>{try{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(value,'current');tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error('Lưu bị hủy'));}catch(e){reject(e);}});}
+  async function initialize(){
+    let dbState=null,lsState=null;
+    try{await openDatabase();dbState=await dbGet();}catch(e){db=null;}
+    try{const raw=localStorage.getItem(KEY);if(raw)lsState=JSON.parse(raw);}catch(e){}
+    const candidates=[dbState,lsState].filter(x=>x&&x.version===1).sort((a,b)=>(Number(b.updatedAt)||0)-(Number(a.updatedAt)||0));
+    if(candidates.length)state=normalize(candidates[0]);
+    storageMode=db?'indexeddb':'localstorage';
+    // Verify localStorage availability so there is always a fallback when possible.
+    try{localStorage.setItem(KEY+'_probe','1');localStorage.removeItem(KEY+'_probe');}catch(e){if(!db)storageMode='none';}
+    render();
+    await persist(false);
+  }
+  async function persist(updateTime=true){
+    if(updateTime)state.updatedAt=Date.now();
+    const payload=JSON.parse(JSON.stringify(state));
+    let idbOK=false,lsOK=false;
+    if(db){try{await dbPut(payload);idbOK=true;}catch(e){}}
+    try{localStorage.setItem(KEY,JSON.stringify(payload));lsOK=true;}catch(e){}
+    storageMode=idbOK?'indexeddb':(lsOK?'localstorage':'none');
+    updateStorageStatus();
+  }
+  function updateStorageStatus(){
+    const dot=$('storageDot'),txt=$('storageText');
+    dot.classList.toggle('bad',storageMode==='none'||storageMode==='localstorage');
+    if(storageMode==='indexeddb')txt.textContent='Đã tự lưu trên thiết bị bằng IndexedDB và bản dự phòng trình duyệt.';
+    else if(storageMode==='localstorage')txt.textContent='Đã lưu bằng bộ nhớ trình duyệt. Trên iPhone, hãy xuất bản sao lưu định kỳ.';
+    else txt.textContent='Không thể xác nhận lưu tự động trong chế độ mở tệp này. Hãy xuất bản sao lưu sau mỗi lần cập nhật.';
+  }
+  function totalSmoked(){return sum(state.counts.slice(0,state.openDays));}
+  function doneCount(){return state.completed.slice(0,state.openDays).filter(Boolean).length;}
+  function remainingCount(){return state.openDays-doneCount();}
+  function originalTotal(){return sum(baseLimits.slice(0,state.openDays));}
+  function adjustedTotal(){return sum(state.quotas.slice(0,state.openDays));}
+  function savedNet(){let v=0;for(let i=0;i<state.openDays;i++)if(state.completed[i])v+=state.quotas[i]-state.counts[i];return v;}
+  function statusFor(i){
+    if(state.counts[i]>state.quotas[i])return {label:'VƯỢT MỨC',cls:'over'};
+    if(state.completed[i])return {label:state.counts[i]===0?'0 ĐIẾU · ĐÃ CHỐT':'ĐÃ CHỐT',cls:'ok'};
+    if(state.counts[i]===0)return {label:'0 ĐIẾU',cls:'zero'};
+    return {label:'ĐANG GHI',cls:'pending'};
+  }
+  function render(){
+    const n=totalSmoked(),d=doneCount(),left=remainingCount(),pct=state.openDays?Math.round(d/state.openDays*100):0;
+    $('totalSmoked').textContent=n;$('pool').textContent=state.pool;$('completedDays').textContent=d;$('remainingDays').textContent=left;
+    $('progressText').textContent=pct+'%';$('progressSub').textContent=`${d}/${state.openDays} ngày đã hoàn thành`;$('progressFill').style.width=pct+'%';$('progressBar').setAttribute('aria-valuenow',String(pct));
+    $('originalTotal').textContent=originalTotal().toLocaleString('vi-VN')+' điếu';$('adjustedTotal').textContent=adjustedTotal().toLocaleString('vi-VN')+' điếu';$('smokedTotalLine').textContent=n.toLocaleString('vi-VN')+' điếu';
+    const net=savedNet();$('savedTotal').textContent=(net>0?'+':'')+net.toLocaleString('vi-VN')+' điếu';$('savedTotal').classList.toggle('red',net<0);$('savedTotal').classList.toggle('green',net>=0);
+    $('poolLine').textContent=state.pool+' điếu';$('doneLine').textContent=d+' ngày';$('leftLine').textContent=left+' ngày';$('openedBadge').textContent=state.openDays+' ngày đã mở';
+    const select=$('daySelect');select.innerHTML='';
+    for(let i=0;i<state.openDays;i++){const o=document.createElement('option');o.value=String(i);o.textContent=`Ngày ${i+1}${state.completed[i]?' · Đã chốt':''}`;select.appendChild(o);}select.value=String(state.selectedDay);
+    const i=state.selectedDay,st=statusFor(i);$('dayKicker').textContent='NGÀY '+(i+1);$('dayCount').textContent=state.counts[i].toLocaleString('vi-VN');$('baseLimit').textContent=baseLimits[i];$('adjustedLimit').textContent=state.quotas[i];
+    const badge=$('dayStatus');badge.textContent=st.label;badge.className='status '+st.cls;
+    const alert=$('dayAlert');
+    if(state.counts[i]>state.quotas[i]){alert.className='alert warn';alert.innerHTML=`<span>!</span><span><strong>Đã vượt hạn mức ${state.counts[i]-state.quotas[i]} điếu.</strong> Số thực tế vẫn được giữ nguyên. Hãy tiếp tục ghi nhận trung thực, không cần tự trách mình.</span>`;}
+    else if(state.counts[i]===0){alert.className='alert good';alert.innerHTML='<span>✓</span><span><strong>0 điếu cho đến lúc này.</strong> Đây là kết quả đáng ghi nhận. Không cần hút để dùng hết hạn mức.</span>';}
+    else{alert.className='alert info';alert.innerHTML=`<span>i</span><span>Đã ghi nhận ${state.counts[i]} điếu. Còn ${state.quotas[i]-state.counts[i]} điếu so với hạn mức — đây không phải mục tiêu phải hút hết.</span>`;}
+    $('finishBtn').hidden=state.completed[i];$('closedNote').hidden=!state.completed[i];
+    if(state.completed[i]&&state.counts[i]>0){$('closedNote').textContent='Ngày đã chốt. Bạn vẫn có thể ghi nhận thêm bằng +1; hạn mức và quỹ phân bổ đã chốt sẽ không bị tính lại.';}
+    renderHistory();updateStorageStatus();
+  }
+  function renderHistory(){
+    const grid=$('historyGrid');grid.innerHTML='';
+    for(let i=0;i<35;i++){
+      const b=document.createElement('button');b.type='button';b.className='history-item'+(i===state.selectedDay?' selected':'');b.disabled=i>=state.openDays;
+      if(i>=state.openDays){b.style.opacity='.38';b.style.cursor='not-allowed';b.innerHTML=`<span class="history-main"><span class="history-name">Ngày ${i+1}${i>=27?' · Bổ sung':''}</span><span class="history-meta">Chưa mở</span></span><span class="history-right"><span class="history-state">CHƯA MỞ</span></span>`;}
+      else{const st=statusFor(i);b.innerHTML=`<span class="history-main"><span class="history-name">Ngày ${i+1}${i>=27?' · Bổ sung':''}</span><span class="history-meta">Gốc ${baseLimits[i]} · Điều chỉnh ${state.quotas[i]}</span></span><span class="history-right"><span class="history-count">${state.counts[i]} điếu</span><br><span class="history-state">${st.label}</span></span>`;b.addEventListener('click',()=>selectDay(i));}
+      grid.appendChild(b);
+    }
+  }
+  async function selectDay(i){state.selectedDay=i;render();await persist();window.scrollTo({top:0,behavior:'smooth'});}
+  $('daySelect').addEventListener('change',async e=>{state.selectedDay=Number(e.target.value);render();await persist();});
+  $('addBtn').addEventListener('click',async()=>{const i=state.selectedDay;state.counts[i]+=1;render();await persist();});
+  $('finishBtn').addEventListener('click',async()=>{
+    const i=state.selectedDay;if(state.completed[i])return;
+    const surplus=Math.max(0,state.quotas[i]-state.counts[i]);
+    const msg=`Chốt Ngày ${i+1}?\n\nĐã hút: ${state.counts[i]} điếu\nHạn mức điều chỉnh: ${state.quotas[i]} điếu\nPhần dư đưa vào quỹ: ${surplus} điếu\n\nSau khi chốt, ngày này không thể hoàn thành lần nữa. Bạn vẫn có thể ghi nhận thêm bằng +1, nhưng quỹ sẽ không tính lại.`;
+    if(!window.confirm(msg))return;
+    state.completed[i]=true;state.pool+=surplus;
+    const future=[];for(let j=i+1;j<state.openDays;j++)if(!state.completed[j])future.push(j);
+    if(future.length){
+      const share=Math.floor(state.pool/future.length);
+      if(share>0){for(const j of future)state.quotas[j]+=share;state.pool-=share*future.length;}
+    }else if(state.counts[i]>0&&state.openDays<35){
+      // Mở từng ngày bổ sung khi vẫn còn hút thuốc; ngày mới nhận toàn bộ quỹ hiện có.
+      state.openDays+=1;state.quotas[state.openDays-1]=state.pool;state.pool=0;
+    }
+    render();await persist();
+  });
+  $('backupBtn').addEventListener('click',()=>{
+    const payload={...state,backupCreatedAt:new Date().toISOString(),app:'Nhat ky cai thuoc 27 ngay'};
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='sao-luu-nhat-ky-cai-thuoc.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+  });
+  $('resetBtn').addEventListener('click',async()=>{
+    const ok=window.confirm('ĐẶT LẠI TOÀN BỘ HÀNH TRÌNH?\n\nTất cả số điếu đã ghi, ngày hoàn thành, quỹ phân bổ và hạn mức điều chỉnh sẽ bị xóa khỏi thiết bị này. Thao tác này không thể hoàn tác.');
+    if(!ok)return;state=initialState();render();await persist();window.scrollTo({top:0,behavior:'smooth'});
+  });
+  initialize();
+})();
+</script>
+</body>
+</html>
