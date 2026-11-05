@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101214">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>THE QUIT TRACKER</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101214;
+      --surface: #191d20;
+      --surface-2: #20262a;
+      --line: #30383d;
+      --text: #f1f4f5;
+      --muted: #a2adb3;
+      --blue: #65a9ff;
+      --blue-bg: #16283a;
+      --green: #79d6a0;
+      --green-bg: #183126;
+      --red: #ff8585;
+      --red-bg: #3a2022;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--bg); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    button, select { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    .app {
+      width: min(100% - 32px, 760px);
+      margin: 0 auto;
+      padding: calc(24px + env(safe-area-inset-top)) 0 calc(36px + env(safe-area-inset-bottom));
+    }
+    header { margin-bottom: 22px; }
+    .kicker, .eyebrow {
+      margin: 0 0 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 7vw, 34px);
+      line-height: 1.08;
+      letter-spacing: .035em;
+      font-weight: 800;
+    }
+    .subtitle { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
+
+    .overview {
+      padding: 17px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px 12px;
+    }
+    .stat { min-width: 0; }
+    .stat-label { display: block; color: var(--muted); font-size: 11px; line-height: 1.3; }
+    .stat-value {
+      display: block;
+      margin-top: 3px;
+      overflow-wrap: anywhere;
+      font-size: clamp(18px, 4.8vw, 23px);
+      line-height: 1.15;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-value.negative { color: var(--red); }
+    .progress-block { margin-top: 20px; }
+    .progress-top { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; }
+    .progress-track { height: 8px; margin-top: 8px; overflow: hidden; background: #30373b; border-radius: 999px; }
+    .progress-fill { height: 100%; width: 0; background: var(--green); border-radius: inherit; }
+
+    section { margin-top: 25px; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    h2 { margin: 0; font-size: 18px; line-height: 1.2; font-weight: 750; }
+    .day-picker {
+      min-width: 112px;
+      max-width: 52%;
+      min-height: 42px;
+      padding: 8px 34px 8px 11px;
+      color: var(--text);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .selected-day {
+      padding: 17px;
+      background: var(--surface);
+      border: 1px solid var(--blue);
+      border-radius: var(--radius);
+    }
+    .selected-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+    .day-number { font-size: 23px; line-height: 1.1; font-weight: 800; }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 25px;
+      padding: 3px 9px;
+      color: var(--blue);
+      background: var(--blue-bg);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .status-pill.done { color: var(--green); background: var(--green-bg); }
+    .status-pill.over { color: var(--red); background: var(--red-bg); }
+    .limit-line { margin: 9px 0 0; color: var(--muted); font-size: 13px; }
+    .limit-line strong { color: var(--text); font-weight: 700; }
+    .counter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 21px;
+    }
+    .counter-label { display: block; color: var(--muted); font-size: 12px; }
+    .counter-number { display: flex; align-items: baseline; gap: 7px; margin-top: 1px; }
+    .counter-number strong { font-size: 48px; line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .counter-number span { color: var(--muted); font-size: 14px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 11px 16px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      font-weight: 750;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-primary { min-width: 92px; min-height: 58px; color: #081522; background: var(--blue); font-size: 21px; }
+    .btn-complete { width: 100%; margin-top: 17px; color: var(--green); background: var(--green-bg); border-color: #315840; }
+    .btn-secondary { color: var(--text); background: var(--surface-2); border-color: var(--line); }
+    .btn-danger { color: #fff; background: #a63c42; }
+    .day-message {
+      min-height: 22px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .day-message.over { color: var(--red); font-weight: 700; }
+    .day-message.done { color: var(--green); }
+    .locked-note { margin: 12px 0 0; color: var(--green); font-size: 13px; }
+
+    .day-list { display: grid; gap: 7px; }
+    .day-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      min-width: 0;
+      padding: 11px 12px;
+      color: var(--text);
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .day-item.selected { border: 1.5px solid var(--blue); background: #17232e; }
+    .day-item.done { border-left: 3px solid var(--green); }
+    .day-item.over { border-right: 3px solid var(--red); }
+    .day-item:focus-visible, .btn:focus-visible, .day-picker:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .day-item-main { min-width: 0; }
+    .day-item-title { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+    .day-item-title strong { font-size: 14px; }
+    .day-item-status { color: var(--muted); font-size: 11px; }
+    .day-item.done .day-item-status { color: var(--green); }
+    .day-item-values { display: flex; flex-wrap: wrap; gap: 5px 11px; margin-top: 4px; color: var(--muted); font-size: 11px; }
+    .day-item-warning { flex: 0 0 auto; color: var(--red); font-size: 11px; font-weight: 750; text-align: right; }
+    .empty-warning { color: var(--muted); }
+
+    .reset-area { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .reset-area p { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+    .reset-confirm {
+      margin-top: 12px;
+      padding: 14px;
+      background: var(--red-bg);
+      border: 1px solid #714044;
+      border-radius: 12px;
+    }
+    .reset-confirm strong { display: block; margin-bottom: 5px; font-size: 14px; }
+    .reset-confirm p { margin-bottom: 12px; color: #f0c4c4; }
+    .reset-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .storage-note { margin-top: 13px; color: var(--muted); font-size: 11px; }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 430px) {
+      .app { width: min(100% - 24px, 760px); padding-top: calc(18px + env(safe-area-inset-top)); }
+      .overview, .selected-day { padding: 14px; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; }
+      .section-head { align-items: center; }
+      .day-picker { max-width: 48%; }
+      .counter-number strong { font-size: 44px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <p class="kicker">Hành trình 0 điếu mỗi ngày</p>
+      <h1>THE QUIT TRACKER</h1>
+      <p class="subtitle">27 ngày · 100 điếu hạn mức ban đầu · Có thể kéo dài tối đa 35 ngày</p>
+    </header>
+
+    <section class="overview" aria-label="Thống kê tổng quan">
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="progress-block">
+        <div class="progress-top">
+          <span>Tiến độ hành trình</span>
+          <strong id="progressText">0%</strong>
+        </div>
+        <div class="progress-track" role="progressbar" aria-label="Tiến độ hành trình" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressTrack">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="selectedHeading">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Ghi nhận thủ công</p>
+          <h2 id="selectedHeading">Ngày đang chọn</h2>
+        </div>
+        <select class="day-picker" id="daySelect" aria-label="Chọn ngày"></select>
+      </div>
+      <div class="selected-day" id="selectedDayPanel" aria-live="polite">
+        <div class="selected-top">
+          <div>
+            <div class="day-number" id="selectedDayNumber">Ngày 1</div>
+            <p class="limit-line" id="selectedLimits">Hạn mức gốc: <strong>8</strong> · Sau điều chỉnh: <strong>8</strong></p>
+          </div>
+          <span class="status-pill" id="selectedStatus">Chưa hoàn thành</span>
+        </div>
+        <div class="counter-row">
+          <div>
+            <span class="counter-label">Số điếu thực hút</span>
+            <div class="counter-number"><strong id="smokedCount">0</strong><span>điếu</span></div>
+          </div>
+          <button class="btn btn-primary" id="addOneButton" type="button">+1</button>
+        </div>
+        <p class="day-message" id="dayMessage">Bạn có thể ghi nhận số điếu đã hút.</p>
+        <button class="btn btn-complete" id="completeButton" type="button">Xác nhận hoàn thành ngày</button>
+        <p class="locked-note" id="lockedNote" hidden>Ngày này đã hoàn thành và được khóa. Dữ liệu không thể thay đổi.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="daysHeading">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Tối đa 35 ngày</p>
+          <h2 id="daysHeading">Danh sách ngày</h2>
+        </div>
+      </div>
+      <div class="day-list" id="dayList"></div>
+    </section>
+
+    <footer class="reset-area">
+      <p>Đặt lại sẽ xóa toàn bộ số liệu và khôi phục lịch 27 ngày ban đầu.</p>
+      <button class="btn btn-secondary" id="resetButton" type="button">Đặt lại dữ liệu</button>
+      <div class="reset-confirm" id="resetConfirm" hidden>
+        <strong>Xác nhận đặt lại lần cuối?</strong>
+        <p>Tất cả dữ liệu hiện tại, ngày kéo dài và quỹ thuốc dư sẽ bị xóa. Thao tác này không thể hoàn tác.</p>
+        <div class="reset-actions">
+          <button class="btn btn-danger" id="confirmResetButton" type="button">Xác nhận đặt lại</button>
+          <button class="btn btn-secondary" id="cancelResetButton" type="button">Hủy</button>
+        </div>
+      </div>
+      <p class="storage-note" id="storageNote" role="status" hidden></p>
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "the-quit-tracker-v1";
+      const INITIAL_DAYS = 27;
+      const MAX_DAYS = 35;
+      const ORIGINAL_SCHEDULE = [
+        8,
+        7, 7, 7,
+        6, 6, 6, 6,
+        5, 5, 5, 5,
+        4, 4, 4, 4,
+        2, 2, 2, 2,
+        1, 1, 1,
+        0, 0, 0, 0
+      ];
+      const ORIGINAL_TOTAL = ORIGINAL_SCHEDULE.reduce((sum, value) => sum + value, 0);
+
+      const $ = (id) => document.getElementById(id);
+      const elements = {
+        statsGrid: $("statsGrid"), progressText: $("progressText"), progressTrack: $("progressTrack"),
+        progressFill: $("progressFill"), daySelect: $("daySelect"), selectedDayNumber: $("selectedDayNumber"),
+        selectedLimits: $("selectedLimits"), selectedStatus: $("selectedStatus"), smokedCount: $("smokedCount"),
+        addOneButton: $("addOneButton"), completeButton: $("completeButton"), dayMessage: $("dayMessage"),
+        lockedNote: $("lockedNote"), dayList: $("dayList"), resetButton: $("resetButton"),
+        resetConfirm: $("resetConfirm"), confirmResetButton: $("confirmResetButton"),
+        cancelResetButton: $("cancelResetButton"), storageNote: $("storageNote")
+      };
+
+      function makeFreshState() {
+        return {
+          days: ORIGINAL_SCHEDULE.map((limit) => ({
+            initialLimit: limit,
+            adjustedLimit: limit,
+            smoked: 0,
+            completed: false
+          })),
+          fund: 0,
+          extensionDays: 0,
+          selectedDay: 0
+        };
+      }
+
+      function isNonNegativeInteger(value) {
+        return Number.isSafeInteger(value) && value >= 0;
+      }
+
+      function validateLoadedState(raw) {
+        if (!raw || !Array.isArray(raw.days) || raw.days.length < INITIAL_DAYS || raw.days.length > MAX_DAYS) return null;
+        if (!isNonNegativeInteger(raw.fund)) return null;
+        const days = [];
+        for (let i = 0; i < raw.days.length; i += 1) {
+          const day = raw.days[i];
+          const expectedInitial = i < INITIAL_DAYS ? ORIGINAL_SCHEDULE[i] : 0;
+          if (!day || day.initialLimit !== expectedInitial) return null;
+          if (!isNonNegativeInteger(day.adjustedLimit) || !isNonNegativeInteger(day.smoked) || typeof day.completed !== "boolean") return null;
+          days.push({
+            initialLimit: expectedInitial,
+            adjustedLimit: day.adjustedLimit,
+            smoked: day.smoked,
+            completed: day.completed
+          });
+        }
+        const extensionDays = days.length - INITIAL_DAYS;
+        if (raw.extensionDays !== extensionDays) return null;
+        const selectedDay = Number.isSafeInteger(raw.selectedDay) && raw.selectedDay >= 0 && raw.selectedDay < days.length ? raw.selectedDay : 0;
+        return { days, fund: raw.fund, extensionDays, selectedDay };
+      }
+
+      function loadState() {
+        try {
+          const stored = window.localStorage.getItem(STORAGE_KEY);
+          if (!stored) return makeFreshState();
+          const parsed = JSON.parse(stored);
+          const valid = validateLoadedState(parsed);
+          return valid || makeFreshState();
+        } catch (error) {
+          showStorageNote("Không thể đọc localStorage trong phiên Safari này. Dữ liệu mới sẽ chỉ tồn tại khi trang còn mở.");
+          return makeFreshState();
+        }
+      }
+
+      let state = loadState();
+
+      function showStorageNote(message) {
+        if (!elements.storageNote) return;
+        elements.storageNote.textContent = message;
+        elements.storageNote.hidden = false;
+      }
+
+      function saveState() {
+        state.extensionDays = state.days.length - INITIAL_DAYS;
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          elements.storageNote.hidden = true;
+        } catch (error) {
+          showStorageNote("Safari không cho phép lưu localStorage. Hãy mở bằng GitHub Pages hoặc kiểm tra quyền lưu trữ của Safari để giữ dữ liệu sau khi đóng trang.");
+        }
+      }
+
+      function formatNumber(value) {
+        return new Intl.NumberFormat("vi-VN").format(value);
+      }
+
+      function totalSmoked() {
+        return state.days.reduce((sum, day) => sum + day.smoked, 0);
+      }
+
+      function totalInitialLimit() {
+        return state.days.reduce((sum, day) => sum + day.initialLimit, 0);
+      }
+
+      function totalAdjustedLimit() {
+        return state.days.reduce((sum, day) => sum + day.adjustedLimit, 0);
+      }
+
+      function completedDays() {
+        return state.days.filter((day) => day.completed).length;
+      }
+
+      function renderStats() {
+        const smoked = totalSmoked();
+        const initial = totalInitialLimit();
+        const adjusted = totalAdjustedLimit();
+        const saved = adjusted - smoked;
+        const done = completedDays();
+        const remaining = state.days.length - done;
+        const progress = state.days.length ? (done / state.days.length) * 100 : 0;
+        const stats = [
+          ["Tổng đã hút", smoked, "điếu"],
+          ["Hạn mức ban đầu", initial, "điếu"],
+          ["Hạn mức điều chỉnh", adjusted, "điếu"],
+          ["Tiết kiệm so với hạn mức", saved, "điếu", saved < 0],
+          ["Thuốc dư trong quỹ", state.fund, "điếu"],
+          ["Ngày đã hoàn thành", done, "ngày"],
+          ["Ngày còn lại", remaining, "ngày"],
+          ["Tổng số ngày", state.days.length, "ngày"],
+          ["Ngày được kéo dài", state.extensionDays, "ngày"]
+        ];
+        elements.statsGrid.innerHTML = stats.map(([label, value, unit, negative]) => `
+          <div class="stat">
+            <span class="stat-label">${label}</span>
+            <strong class="stat-value${negative ? " negative" : ""}">${formatNumber(value)} <span style="font-size:11px;font-weight:600;color:var(--muted)">${unit}</span></strong>
+          </div>
+        `).join("");
+        elements.progressText.textContent = `${progress.toFixed(1).replace(".0", "")}%`;
+        elements.progressFill.style.width = `${progress}%`;
+        elements.progressTrack.setAttribute("aria-valuenow", String(Math.round(progress)));
+      }
+
+      function dayStatusLabel(day) {
+        if (day.completed) return "Đã hoàn thành";
+        return "Chưa hoàn thành";
+      }
+
+      function renderDayPicker() {
+        elements.daySelect.innerHTML = state.days.map((day, index) => {
+          const over = day.smoked > day.adjustedLimit;
+          const suffix = day.completed ? " · Hoàn thành" : over ? ` · Vượt ${day.smoked - day.adjustedLimit}` : "";
+          return `<option value="${index}"${index === state.selectedDay ? " selected" : ""}>Ngày ${index + 1}${suffix}</option>`;
+        }).join("");
+      }
+
+      function renderSelectedDay() {
+        const day = state.days[state.selectedDay];
+        if (!day) return;
+        const overBy = Math.max(0, day.smoked - day.adjustedLimit);
+        elements.selectedDayNumber.textContent = `Ngày ${state.selectedDay + 1}`;
+        elements.selectedLimits.innerHTML = `Hạn mức gốc: <strong>${day.initialLimit}</strong> · Sau điều chỉnh: <strong>${day.adjustedLimit}</strong>`;
+        elements.smokedCount.textContent = formatNumber(day.smoked);
+        elements.selectedStatus.textContent = overBy > 0 ? `Vượt ${overBy} điếu` : dayStatusLabel(day);
+        elements.selectedStatus.className = `status-pill${day.completed ? " done" : ""}${overBy > 0 ? " over" : ""}`;
+
+        if (overBy > 0) {
+          elements.dayMessage.textContent = `Cảnh báo: đã vượt hạn mức ${overBy} điếu.`;
+          elements.dayMessage.className = "day-message over";
+        } else if (day.completed) {
+          elements.dayMessage.textContent = "Ngày đã khóa. Số điếu và hạn mức của ngày này không thể thay đổi.";
+          elements.dayMessage.className = "day-message done";
+        } else {
+          const remainingAllowance = day.adjustedLimit - day.smoked;
+          elements.dayMessage.textContent = day.adjustedLimit === 0
+            ? "Hạn mức hôm nay là 0 điếu."
+            : `Còn trong hạn mức: ${remainingAllowance} điếu. Đây là mức tối đa, không phải số cần hút.`;
+          elements.dayMessage.className = "day-message";
+        }
+
+        elements.addOneButton.disabled = day.completed;
+        elements.completeButton.disabled = day.completed;
+        elements.completeButton.textContent = day.completed ? "Ngày đã hoàn thành" : "Xác nhận hoàn thành ngày";
+        elements.lockedNote.hidden = !day.completed;
+      }
+
+      function renderDayList() {
+        elements.dayList.innerHTML = state.days.map((day, index) => {
+          const overBy = Math.max(0, day.smoked - day.adjustedLimit);
+          const classes = ["day-item"];
+          if (index === state.selectedDay) classes.push("selected");
+          if (day.completed) classes.push("done");
+          if (overBy > 0) classes.push("over");
+          const warning = overBy > 0 ? `Vượt ${overBy}` : "";
+          return `
+            <button type="button" class="${classes.join(" ")}" data-day-index="${index}" aria-pressed="${index === state.selectedDay}">
+              <span class="day-item-main">
+                <span class="day-item-title">
+                  <strong>Ngày ${index + 1}</strong>
+                  <span class="day-item-status">${dayStatusLabel(day)}</span>
+                </span>
+                <span class="day-item-values">
+                  <span>Gốc ${day.initialLimit}</span>
+                  <span>Điều chỉnh ${day.adjustedLimit}</span>
+                  <span>Đã hút ${day.smoked}</span>
+                </span>
+              </span>
+              <span class="day-item-warning">${warning}</span>
+            </button>
+          `;
+        }).join("");
+      }
+
+      function render() {
+        renderStats();
+        renderDayPicker();
+        renderSelectedDay();
+        renderDayList();
+      }
+
+      function selectDay(index) {
+        if (!Number.isInteger(index) || index < 0 || index >= state.days.length) return;
+        state.selectedDay = index;
+        saveState();
+        render();
+      }
+
+      function addOne() {
+        const day = state.days[state.selectedDay];
+        if (!day || day.completed) return;
+        day.smoked += 1;
+        saveState();
+        render();
+      }
+
+      function distributeFundAfterCompletion() {
+        let remainingIndexes = state.days
+          .map((day, index) => ({ day, index }))
+          .filter((entry) => !entry.day.completed)
+          .map((entry) => entry.index);
+
+        // Chỉ kéo dài khi đã hoàn thành ngày cuối cùng hiện có và quỹ vẫn còn thuốc.
+        if (remainingIndexes.length === 0 && state.fund > 0 && state.days.length < MAX_DAYS) {
+          state.days.push({ initialLimit: 0, adjustedLimit: 0, smoked: 0, completed: false });
+          state.extensionDays = state.days.length - INITIAL_DAYS;
+          remainingIndexes = [state.days.length - 1];
+        }
+
+        if (state.fund <= 0 || remainingIndexes.length === 0) return;
+
+        const share = Math.floor(state.fund / remainingIndexes.length);
+        const remainder = state.fund % remainingIndexes.length;
+        remainingIndexes.forEach((dayIndex, position) => {
+          const extra = position < remainder ? 1 : 0;
+          state.days[dayIndex].adjustedLimit += share + extra;
+        });
+        state.fund = 0;
+      }
+
+      function completeSelectedDay() {
+        const day = state.days[state.selectedDay];
+        if (!day || day.completed) return;
+
+        const surplus = day.adjustedLimit - day.smoked;
+        day.completed = true;
+        if (surplus > 0) state.fund += surplus;
+        distributeFundAfterCompletion();
+        saveState();
+        render();
+      }
+
+      function resetAll() {
+        state = makeFreshState();
+        elements.resetConfirm.hidden = true;
+        saveState();
+        render();
+      }
+
+      elements.addOneButton.addEventListener("click", addOne);
+      elements.completeButton.addEventListener("click", completeSelectedDay);
+      elements.daySelect.addEventListener("change", (event) => selectDay(Number(event.target.value)));
+      elements.dayList.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-day-index]");
+        if (!button) return;
+        selectDay(Number(button.getAttribute("data-day-index")));
+      });
+      elements.resetButton.addEventListener("click", () => {
+        elements.resetConfirm.hidden = false;
+      });
+      elements.confirmResetButton.addEventListener("click", resetAll);
+      elements.cancelResetButton.addEventListener("click", () => {
+        elements.resetConfirm.hidden = true;
+      });
+
+      // Các kiểm tra bất biến của lịch gốc: tổng đúng 100 và có đúng 27 ngày.
+      console.assert(ORIGINAL_SCHEDULE.length === INITIAL_DAYS, "Lịch gốc phải có 27 ngày.");
+      console.assert(ORIGINAL_TOTAL === 100, "Tổng hạn mức ban đầu phải bằng 100 điếu.");
+      console.assert(ORIGINAL_SCHEDULE[0] === 8, "Ngày 1 phải có 8 điếu.");
+      console.assert(ORIGINAL_SCHEDULE.slice(1, 4).every((n) => n === 7), "Ngày 2–4 phải có 7 điếu/ngày.");
+      console.assert(ORIGINAL_SCHEDULE.slice(23).every((n) => n === 0), "Ngày 24–27 phải có 0 điếu/ngày.");
+
+      render();
+    })();
+  </script>
+</body>
+</html>
